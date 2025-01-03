@@ -1,0 +1,5 @@
+/.pytest_cache
+/.venv
+/.vscode
+/photobooth.egg-info
+/your_project_name.egg-info
