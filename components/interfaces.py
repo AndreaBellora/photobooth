@@ -18,7 +18,7 @@ class CameraInterface:
                 check=True
             )
             if len(result.stdout.splitlines()) < 3:
-                logging.error('No camera detected.')
+                logging.info('No camera detected.')
                 return None
             camera_name = result.stdout.splitlines()[2]
             return camera_name
@@ -29,6 +29,10 @@ class CameraInterface:
     def __init__(self, camera_model):
         self.camera_model = camera_model
         self.camera_name = self.get_camera_name()
+        if self.camera_model == 'Fake camera':
+            return
+        if self.camera_name is None:
+            raise Exception('No camera found')
         logging.info(f'Found camera named: {self.camera_name}')
         if (camera_model not in self.camera_name) and (camera_model != 'Fake camera'):
             raise Exception(f'Tried setting up {camera_model}, but camera not detected.')
@@ -68,7 +72,7 @@ class CameraInterface:
         except subprocess.CalledProcessError as e:
             logging.error(f"Error displaying picture: {e}")
 
-    def capture(self):
+    def capture(self,timeout=30):
         # Handle the fake camera case
         if self.camera_model == 'Fake camera':
             if not os.path.exists(TEST_PICTURE_PATH):
@@ -83,7 +87,8 @@ class CameraInterface:
                 ['gphoto2', '--capture-image-and-download'],
                 text=True,
                 capture_output=True,
-                check=True
+                check=True,
+                timeout=timeout
             )
             for line in result.stdout.splitlines():
                 if 'Saving file as' in line:
@@ -94,42 +99,8 @@ class CameraInterface:
                     return picture_path
         except:
             logging.error('Error taking picture')
-    
-if __name__ == '__main__':
-    # Setup logging
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
-    
-    model = 'Fake camera'
 
-    # Read the model from cmd line and change it, unless it's empty
-    if len(sys.argv) > 1:
-        model = sys.argv[1]
 
-    cam_interface = CameraInterface(model)
-
-    # Test camera setup
-    try:
-        cam_interface.setup()
-    except Exception as e:
-        print(e)
-        sys.exit(1)
-
-    # Test take picture
-    picture_path = cam_interface.capture()
-    logging.info(f'Picture path: {picture_path}')
-    
-    # Display picture
-    if picture_path:
-        try:
-            cam_interface.display(picture_path)
-        except subprocess.CalledProcessError as e:
-            logging.error(f"Error opening picture: {e}")
-        
-        # Remove the picture, unless it's the fake camera
-        if model != 'Fake camera':
-            os.remove(picture_path)
-    else:
-        logging.error('No picture path found.')
-        sys.exit(1)
+class PrinterInterface:
+    # To be implemented
+    pass

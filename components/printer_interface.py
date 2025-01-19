@@ -1,0 +1,1 @@
+# Usa il comando lp da terminale
