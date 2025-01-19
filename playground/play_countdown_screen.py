@@ -5,6 +5,7 @@ from kivy.app import App
 from kivy.graphics import Color, Rectangle
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.clock import Clock
@@ -49,7 +50,6 @@ class CountdownScreen(Screen):
 
         # Make it so that the label is just big enough to fit the text
         self.label.bind(texture_size=self.label.setter('size'))
-        print(self.label.texture_size)
 
         # self.label.bind(size=self.label.setter('text_size'))  # Wrap text within the label bounds
         with self.label.canvas.before:
@@ -62,10 +62,13 @@ class CountdownScreen(Screen):
         # Start button
         self.start_button = Button(
             text='Start countdown',
-            size_hint=(0.3, 0.1),
+            size_hint=(None, None),
+            font_size=self.base_font_size
         )
         self.start_button.pos_hint = {'center_x': 0.5, 'center_y': 0.2}
         self.start_button.bind(on_press=self.start_countdown)
+        self.start_button.bind(texture_size=self.start_button.setter('size'))  # Make the button text size responsive
+
         self.layout.add_widget(self.start_button)
 
         self.add_widget(self.layout)
@@ -77,6 +80,8 @@ class CountdownScreen(Screen):
 
 
     def start_countdown(self, *args):
+        if self.start_button in self.layout.children:
+            self.layout.remove_widget(self.start_button)
         # Remove the button from the layout
         # if self.start_button in self.box_layout.children:
         #     self.box_layout.remove_widget(self.start_button)  # Explicitly remove the button
@@ -98,8 +103,6 @@ class CountdownScreen(Screen):
                 self.label.text = "Smile!"
             else:
                 self.label.text = str(self.counts)
-            print('Texture size:',self.label.texture_size)
-            print('Label size:',self.label.size)
 
         
         self.counts -= 1
