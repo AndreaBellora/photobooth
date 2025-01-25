@@ -1,8 +1,8 @@
 import subprocess
 import sys
 import os
-import logging
 import time
+from kivy.logger import Logger
 
 TEST_PICTURE_PATH = 'tests/test_pic.JPG'
 
@@ -18,28 +18,29 @@ class CameraInterface:
                 check=True
             )
             if len(result.stdout.splitlines()) < 3:
-                logging.info('No camera detected.')
+                Logger.warning('CameraInterface: No camera detected.')
                 return None
             camera_name = result.stdout.splitlines()[2]
             return camera_name
         except subprocess.CalledProcessError as e:
-            logging.fatal(f"Error detecting camera: {e}")
+            Logger.fatal(f"CameraInterface: Error detecting camera: {e}")
             return None
 
     def __init__(self, camera_model):
         self.camera_model = camera_model
         self.camera_name = self.get_camera_name()
+        Logger.info(f'CameraInterface: Setting up camera {self.camera_model}')
         if self.camera_model == 'Fake camera':
             return
         if self.camera_name is None:
             raise Exception('No camera found')
-        logging.info(f'Found camera named: {self.camera_name}')
+        Logger.debug(f'CameraInterface: Found camera named: {self.camera_name}')
         if (camera_model not in self.camera_name) and (camera_model != 'Fake camera'):
             raise Exception(f'Tried setting up {camera_model}, but camera not detected.')
 
     def setup_nikon_dsc_d3000(self):
         if 'Nikon DSC D3000' in self.camera_name:
-            logging.info('Nikon DSC D3000 detected.')
+            Logger.debug('CameraInterface: Nikon DSC D3000 detected.')
             # Execute the command to setup the right capture mode 
             # gphoto2 --set-config /main/capturesettings/capturemode=3
             try:
@@ -47,9 +48,9 @@ class CameraInterface:
                     ['gphoto2', '--set-config', '/main/capturesettings/capturemode=3'],
                     check=True
                 )
-                logging.info('Nikon DSC D3000 setup complete.')
+                Logger.info('CameraInterface: Nikon DSC D3000 setup complete.')
             except subprocess.CalledProcessError as e:
-                logging.fatal(f"Error setting up Nikon DSC D3000: {e}")
+                Logger.fatal(f"CameraInterface: Error setting up Nikon DSC D3000: {e}")
         else:
             raise Exception('Tried setting up Nikon DSC D3000, but camera not detected.')
         
@@ -60,7 +61,7 @@ class CameraInterface:
         elif self.camera_model == 'Fake camera':
             return True
         else:
-            logging.error(f'Camera model {self.camera_model} not supported.')
+            Logger.error(f'CameraInterface: Camera model {self.camera_model} not supported.')
             return False
 
     def display(self,picture_path, duration=5):
@@ -70,13 +71,13 @@ class CameraInterface:
             time.sleep(duration)
             subprocess.run(['pkill', '-f', picture_path], check=True)
         except subprocess.CalledProcessError as e:
-            logging.error(f"Error displaying picture: {e}")
+            Logger.error(f"CameraInterface: Error displaying picture: {e}")
 
     def capture(self,timeout=30):
         # Handle the fake camera case
         if self.camera_model == 'Fake camera':
             if not os.path.exists(TEST_PICTURE_PATH):
-                logging.fatal(f'Fake picture path not found: {TEST_PICTURE_PATH}')
+                Logger.fatal(f'CameraInterface: Fake picture path not found: {TEST_PICTURE_PATH}')
                 return None
             return TEST_PICTURE_PATH
         
@@ -98,7 +99,7 @@ class CameraInterface:
                     picture_path = os.path.join(cwd, picture_path)
                     return picture_path
         except:
-            logging.error('Error taking picture')
+            Logger.error('CameraInterface: Error taking picture')
 
 
 class PrinterInterface:

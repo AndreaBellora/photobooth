@@ -72,7 +72,7 @@ class CountdownScreen(Screen):
         self.layout.add_widget(self.start_button)
 
         self.add_widget(self.layout)
-        
+
     def _update_background(self, *args):
         # Ensure the rectangle matches the label's size and position
         self.label.rect.size = self.label.size
