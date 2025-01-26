@@ -1,10 +1,14 @@
 from screeninfo import get_monitors
+from json import load
+
 from kivy.core.window import Window
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 from kivy.logger import Logger, LOG_LEVELS
+
 from components.interfaces import CameraInterface
-from json import load
+from components.offer_screen import OfferScreen
+from components.countdown_screen import CountdownScreen
 
 class MyApp(App):
 
@@ -42,10 +46,10 @@ class MyApp(App):
         # Your app's UI
         sm = ScreenManager()
 
-
-
         # Add all screens here
-        # sm.add_widget(FirstScreen(name='first'))
+        sm.add_widget(OfferScreen(name='offer'))
+        sm.add_widget(CountdownScreen(name='countdown'))
+
         return sm
 
 if __name__ == '__main__':

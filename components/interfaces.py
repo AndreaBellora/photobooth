@@ -79,6 +79,7 @@ class CameraInterface:
             if not os.path.exists(TEST_PICTURE_PATH):
                 Logger.fatal(f'CameraInterface: Fake picture path not found: {TEST_PICTURE_PATH}')
                 return None
+            time.sleep(15)
             return TEST_PICTURE_PATH
         
         # Take picture using 'gphoto2 --capture-image-and-download'

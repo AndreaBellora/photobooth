@@ -1,29 +1,44 @@
+from functools import partial
+from datetime import datetime
+
 from kivy.app import App
 from kivy.graphics import Color, Rectangle
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
+from kivy.uix.screenmanager import Screen, SlideTransition
 from kivy.clock import Clock
-from functools import partial
+from kivy.utils import get_color_from_hex
+from kivy.logger import Logger
 
 class CountdownScreen(Screen):
-    def __init__(self,camera_interface,counts=10,**kwargs):
+    def __init__(self,counts=5,**kwargs):
         super(CountdownScreen, self).__init__(**kwargs)
+        app = App.get_running_app()
+        config = app.config
+
         self.base_font_size = 50
         self.big_font_size = 200
         self.animation_duration = 0.6
         self.animation_steps = 10
-        self.tick_time = 1.5
+        self.tick_time = 2
         self.counts = counts
 
         self.layout = FloatLayout(size_hint=(1, 1))
+
+        # Use the canvas to draw the tiled background
+        with self.canvas.before:
+            self.bg_texture = Rectangle(source='components/img/002-Watercolor-Paper.png', size=self.size, pos=self.pos)
+
+        # Bind size and position changes to update the tiling
+        self.bind(size=self.update_bg, pos=self.update_bg)
+
 
         # Countdown label
         self.label = Label(
             text='This is the countdown screen',
             font_size=self.base_font_size,
+            font_name=config['regular_font'],
+            color=get_color_from_hex('#515151'),
             size_hint=(None, None),
             pos_hint={'center_x': 0.5, 'center_y': 0.5},
             halign='center',
@@ -32,28 +47,21 @@ class CountdownScreen(Screen):
 
         # Make it so that the label is just big enough to fit the text
         self.label.bind(texture_size=self.label.setter('size'))
+        # Wrap text within the label bounds
+        # self.label.bind(size=self.label.setter('text_size'))  
 
-        # self.label.bind(size=self.label.setter('text_size'))  # Wrap text within the label bounds
         with self.label.canvas.before:
-            Color(0,1,0,1)
+            Color(0,0,0,0)
             self.label.rect = Rectangle(size=self.label.size, pos=self.label.pos)
         self.label.bind(size=self._update_background, pos=self._update_background, texture_size=self._update_background)    
 
         self.layout.add_widget(self.label)        
 
-        # Start button
-        self.start_button = Button(
-            text='Start countdown',
-            size_hint=(None, None),
-            font_size=self.base_font_size
-        )
-        self.start_button.pos_hint = {'center_x': 0.5, 'center_y': 0.2}
-        self.start_button.bind(on_press=self.start_countdown)
-        self.start_button.bind(texture_size=self.start_button.setter('size'))  # Make the button text size responsive
-
-        self.layout.add_widget(self.start_button)
-
         self.add_widget(self.layout)
+
+
+        Logger.debug(f'CountdownScreen: Starting countdown: {datetime.now()}')
+        Clock.schedule_once(self.start_countdown, 1)
         
     def _update_background(self, *args):
         # Ensure the rectangle matches the label's size and position
@@ -61,9 +69,6 @@ class CountdownScreen(Screen):
         self.label.rect.pos = self.label.pos
 
     def start_countdown(self, *args):
-        if self.start_button in self.layout.children:
-            self.layout.remove_widget(self.start_button)
-
         self.label.font_size = self.big_font_size
         self.label.text = str(self.counts)
         # Start updating the label text almost every second
@@ -81,7 +86,6 @@ class CountdownScreen(Screen):
                 self.label.text = "Smile!"
             else:
                 self.label.text = str(self.counts)
-
         
         self.counts -= 1
 
@@ -98,15 +102,29 @@ class CountdownScreen(Screen):
         else:
             # Stop the countdown and show the "Go back" button
             Clock.unschedule(self.update_label)
-            self.label.font_size = self.base_font_size
             self.label.text = "Smile!"
+            self.go_forward()
             
-            # Take the picture 
-            
+    def update_bg(self, *args):
+        """
+        Updates the background to make it repeat along x and y.
+        """
+        texture = self.bg_texture.texture
+        texture.wrap = 'repeat'
+        texture.uvsize = (
+            self.width / texture.width,
+            self.height / texture.height
+        )
+        self.bg_texture.size = self.size
+        self.bg_texture.pos = self.pos
 
     def go_back(self, *args):
         self.manager.transition = SlideTransition(direction='right')
         self.manager.current = self.manager.previous()
+
+    def go_home(self, *args):
+        self.manager.transition = SlideTransition(direction='right')
+        self.manager.current = self.manager.first()
 
     def go_forward(self, *args):
         self.manager.transition = SlideTransition(direction='left')

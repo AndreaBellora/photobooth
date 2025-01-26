@@ -38,7 +38,8 @@ class OfferScreen(Screen):
         )
         # Make it so that the label is just big enough to fit the text
         self.label.bind(texture_size=self.label.setter('size'))
-        self.label.bind(size=self.label.setter('text_size'))  # Wrap text within the label bounds
+        # Wrap text within the label bounds
+        self.label.bind(size=self.label.setter('text_size'))  
 
         # Start button
         self.forward_button = RoundedButton(
