@@ -9,9 +9,9 @@ from kivy.app import App
 
 from components.rounded_button import RoundedButton
 
-class OfferScreen(Screen):
+class OfferPrintScreen(Screen):
     def __init__(self, counts=10, **kwargs):
-        super(OfferScreen, self).__init__(**kwargs)
+        super(OfferPrintScreen, self).__init__(**kwargs)
         config = App.get_running_app().config
 
         self.base_font_size = 50

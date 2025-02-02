@@ -1,3 +1,5 @@
+from functools import partial
+from datetime import datetime
 import threading
 
 from kivy.app import App
@@ -42,6 +44,9 @@ class PicLoadingScreen(Screen):
         # Bind size and position changes to update the tiling
         self.bind(size=self.update_bg, pos=self.update_bg)
 
+        # Run asyncronously the take_picture method
+        threading.Thread(target=self.take_picture).start()
+
         self.add_widget(self.layout)
 
 
@@ -70,11 +75,6 @@ class PicLoadingScreen(Screen):
             self.spinny_thing_angle_2 -= 360
 
         self._update_spinny_thing()
-
-    def on_enter(self, *args):
-        Logger.debug(f'PicLoadingScreen: Taking picture')
-        # Run asyncronously the take_picture method
-        threading.Thread(target=self.take_picture).start()
 
     def update_bg(self, *args):
         """

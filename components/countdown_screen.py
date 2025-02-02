@@ -35,8 +35,8 @@ class CountdownScreen(Screen):
 
         # Countdown label
         self.label = Label(
-            text='This is the countdown screen',
-            font_size=self.base_font_size,
+            text=str(self.counts),
+            font_size=self.big_font_size,
             font_name=config['regular_font'],
             color=get_color_from_hex('#515151'),
             size_hint=(None, None),
@@ -60,6 +60,8 @@ class CountdownScreen(Screen):
         self.add_widget(self.layout)
 
 
+
+    def on_enter(self, *args):
         Logger.debug(f'CountdownScreen: Starting countdown: {datetime.now()}')
         Clock.schedule_once(self.start_countdown, 1)
         

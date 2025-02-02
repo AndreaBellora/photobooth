@@ -7,8 +7,9 @@ from kivy.uix.screenmanager import ScreenManager
 from kivy.logger import Logger, LOG_LEVELS
 
 from components.interfaces import CameraInterface
-from components.offer_screen import OfferScreen
+from components.offer_pic_screen import OfferPicScreen
 from components.countdown_screen import CountdownScreen
+from components.pic_loading_screen import PicLoadingScreen
 
 class MyApp(App):
 
@@ -47,8 +48,9 @@ class MyApp(App):
         sm = ScreenManager()
 
         # Add all screens here
-        sm.add_widget(OfferScreen(name='offer'))
-        sm.add_widget(CountdownScreen(name='countdown'))
+        sm.add_widget(OfferPicScreen(name='offer'))
+        sm.add_widget(CountdownScreen(name='countdown',counts=5))
+        sm.add_widget(PicLoadingScreen(camera_interface=self.camera, name='loading'))
 
         return sm
 

@@ -1,10 +1,12 @@
 import subprocess
-import sys
 import os
 import time
 from kivy.logger import Logger
+from pydub import AudioSegment
+from pydub.playback import play
 
 TEST_PICTURE_PATH = 'tests/test_pic.JPG'
+TEST_PICTURE_SOUND = 'tests/camera-shutter-199580.mp3'
 
 class CameraInterface:
 
@@ -79,6 +81,13 @@ class CameraInterface:
             if not os.path.exists(TEST_PICTURE_PATH):
                 Logger.fatal(f'CameraInterface: Fake picture path not found: {TEST_PICTURE_PATH}')
                 return None
+            if not os.path.exists(TEST_PICTURE_SOUND):
+                Logger.fatal(f'CameraInterface: Fake sound path not found: {TEST_PICTURE_SOUND}')
+                return None
+            # Play sound
+            sound = AudioSegment.from_file(TEST_PICTURE_SOUND)
+            play(sound)
+
             time.sleep(15)
             return TEST_PICTURE_PATH
         
