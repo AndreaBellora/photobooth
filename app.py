@@ -11,6 +11,7 @@ from components.interfaces import CameraInterface
 from components.offer_pic_screen import OfferPicScreen
 from components.countdown_screen import CountdownScreen
 from components.photo_capture_screen import PhotoCaptureScreen
+from components.offer_print_screen import OfferPrintScreen
 
 class MyApp(App):
 
@@ -59,9 +60,10 @@ class MyApp(App):
         sm = ScreenManager()
 
         # Add all screens here
-        sm.add_widget(OfferPicScreen(name='offer'))
+        sm.add_widget(OfferPicScreen(name='offer_pic'))
         sm.add_widget(CountdownScreen(name='countdown',counts=5))
         sm.add_widget(PhotoCaptureScreen(camera_interface=self.camera, name='loading'))
+        sm.add_widget(OfferPrintScreen(name='offer_print'))
 
         return sm
 

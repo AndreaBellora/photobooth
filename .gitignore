@@ -4,3 +4,4 @@
 /photobooth.egg-info
 /your_project_name.egg-info
 **/__pycache__
+*.JPG
