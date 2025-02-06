@@ -8,9 +8,9 @@ from kivy.clock import Clock
 from kivy.utils import get_color_from_hex
 from kivy.logger import Logger
 
-class PicLoadingScreen(Screen):
+class PhotoCaptureScreen(Screen):
     def __init__(self,camera_interface,**kwargs):
-        super(PicLoadingScreen, self).__init__(**kwargs)
+        super(PhotoCaptureScreen, self).__init__(**kwargs)
         app = App.get_running_app()
         config = app.config
 
@@ -72,7 +72,7 @@ class PicLoadingScreen(Screen):
         self._update_spinny_thing()
 
     def on_enter(self, *args):
-        Logger.debug(f'PicLoadingScreen: Taking picture')
+        Logger.debug(f'PhotoCaptureScreen: Taking picture')
         # Run asyncronously the take_picture method
         threading.Thread(target=self.take_picture).start()
 
@@ -90,13 +90,13 @@ class PicLoadingScreen(Screen):
         self.bg_texture.pos = self.pos
 
     def take_picture(self):
-        Logger.debug('PicLoadingScreen: Taking picture')
+        Logger.debug('PhotoCaptureScreen: Taking picture')
         app = App.get_running_app()
         app.current_picture = self.camera_interface.capture()
         Clock.schedule_once(self.picture_taken)
 
     def picture_taken(self, dt):
-        Logger.debug('PicLoadingScreen: Picture taken')
+        Logger.debug('PhotoCaptureScreen: Picture taken')
 
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = self.manager.next()
