@@ -1,6 +1,11 @@
 {
     "app_title": "Experiment #1",
     "camera_type": "Fake camera",
+    "watermark_path": "components/img/watermark.png",
+    "watermark_color_map": {
+        "255,255,255,255": [255, 255, 255, 180]
+    },
+    "picture_desired_ar": [148,10],
     "pictures_dir_path": "/home/andrea/Projects/photobooth/pictures",
     "picture_file_name": "WeddingPic",
     "regular_font": "components/fonts/Tinos-Regular.ttf",

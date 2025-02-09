@@ -8,6 +8,7 @@ from kivy.uix.screenmanager import ScreenManager
 from kivy.logger import Logger, LOG_LEVELS
 
 from components.interfaces import CameraInterface
+from components.picture_editor import PictureEditor
 from components.offer_pic_screen import OfferPicScreen
 from components.countdown_screen import CountdownScreen
 from components.photo_capture_screen import PhotoCaptureScreen
@@ -23,11 +24,32 @@ class MyApp(App):
 
         self.title = self.config['app_title']
 
+        # Set up the camera
         try:
             self.camera = CameraInterface(self.config['camera_type'])
         except Exception as e:
             Logger.fatal(f"Error setting up camera: {e}")
             return
+        
+        # Set up the picture editor
+        try:
+            watermark_color_map = {}
+            if 'watermark_color_map' in self.config:
+                for k, v in self.config['watermark_color_map'].items():
+                    key = tuple([int(x) for x in k.split(',')])
+                    watermark_color_map[key] = tuple(v)
+            picture_desired_ar = self.config['picture_desired_ar']
+            picture_desired_ar = picture_desired_ar[0] / picture_desired_ar[1]
+            self.picture_editor = PictureEditor(
+                watermark_path=self.config['watermark_path'],
+                watermark_color_map=watermark_color_map,
+                picture_desired_ar=picture_desired_ar,
+                )
+        except Exception as e:
+            Logger.fatal(f"Error setting up picture editor: {e}")
+            self.stop()
+            return
+            
         
         # Detect screens and print their details
         monitors = get_monitors()
@@ -68,5 +90,5 @@ class MyApp(App):
         return sm
 
 if __name__ == '__main__':
-    Logger.setLevel(LOG_LEVELS['debug'])
+    # Logger.setLevel(LOG_LEVELS['debug'])
     MyApp().run()
