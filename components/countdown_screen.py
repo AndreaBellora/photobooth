@@ -22,6 +22,7 @@ class CountdownScreen(Screen):
         self.animation_steps = 10
         self.tick_time = 2
         self.counts = counts
+        self.current_counts = counts
 
         self.layout = FloatLayout(size_hint=(1, 1))
 
@@ -59,12 +60,15 @@ class CountdownScreen(Screen):
 
         self.add_widget(self.layout)
 
-
-
     def on_enter(self, *args):
         Logger.debug(f'CountdownScreen: Starting countdown: {datetime.now()}')
         Clock.schedule_once(self.start_countdown, 1)
-        
+
+    def on_leave(self, *args):
+        self.current_counts = self.counts
+        self.label.text = str(self.current_counts)
+
+
     def _update_background(self, *args):
         # Ensure the rectangle matches the label's size and position
         self.label.rect.size = self.label.size
@@ -72,7 +76,7 @@ class CountdownScreen(Screen):
 
     def start_countdown(self, *args):
         self.label.font_size = self.big_font_size
-        self.label.text = str(self.counts)
+        self.label.text = str(self.current_counts)
         # Start updating the label text almost every second
         Clock.schedule_interval(self.update_label, self.tick_time - self.animation_duration)
 
@@ -84,14 +88,14 @@ class CountdownScreen(Screen):
             step_frac = step / (self.animation_steps/2)
             self.label.font_size = int((1 + grow_frac)*self.big_font_size - (grow_frac*self.big_font_size) * step_frac)
         def change_text(dt):
-            if self.counts == 0: 
+            if self.current_counts == 0: 
                 self.label.text = "Smile!"
             else:
-                self.label.text = str(self.counts)
+                self.label.text = str(self.current_counts)
         
-        self.counts -= 1
+        self.current_counts -= 1
 
-        if self.counts >= 0:
+        if self.current_counts >= 0:
             # Update the label text and animate the font size
             for i in range(int(self.animation_steps)):
                 if i+1 <= self.animation_steps/2:
