@@ -1,7 +1,7 @@
 {
     "app_title": "Experiment #1",
     "camera_type": "Fake camera",
-    "watermark_path": "components/img/watermark.png",
+    "watermark_path": "components/img/watermark-transparent.png",
     "watermark_color_map": {
         "255,255,255,255": [255, 255, 255, 180]
     },

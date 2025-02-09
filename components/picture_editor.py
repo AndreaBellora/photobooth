@@ -90,7 +90,7 @@ class PictureEditor():
             return None
 
         try:
-            if '.jpeg' in output_path or '.jpg' in output_path:
+            if '.jpeg' in output_path.lower() or '.jpg' in output_path.lower():
                 self.current_image.convert('RGB').save(output_path, format='JPEG')
             else:
                 self.current_image.save(output_path)

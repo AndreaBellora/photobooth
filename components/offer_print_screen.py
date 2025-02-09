@@ -114,6 +114,11 @@ class OfferPrintScreen(Screen):
         self.picture = app.current_picture
         Logger.debug(f'OfferPrintScreen: Picture is {self.picture}')
 
+        # Display the new picture
+        Logger.debug(f"OfferPrintScreen: Displaying picture {self.picture}")
+        self.picture_texture.source = self.picture
+        self.picture_texture.reload()
+
         # Get the paths to the directories
         self.pictures_dir_path = config['pictures_dir_path']
         self.save_dir_path = os.path.join(self.pictures_dir_path, 'all')
@@ -122,8 +127,15 @@ class OfferPrintScreen(Screen):
         # Rename the picture
         self.picture_extension = os.path.splitext(self.picture)[1]
         new_pic_name = config['picture_file_name']
+        
+        # Make the wmk string something that we can rely on
+        if 'wmk' in self.picture:
+            Logger.critical(f'OfferPrintScreen: Please remove the \'wmk\' string from the picture name')
+            # Exit the app
+            App.get_running_app().stop()
+
         # Get the number of pictures already taken 
-        pic_number = len([f for f in os.listdir(self.save_dir_path) if f.endswith(self.picture_extension)])
+        pic_number = len([f for f in os.listdir(self.save_dir_path) if (f.endswith(self.picture_extension)) and 'wmk' not in f])
         new_pic_name += '_' + str(pic_number) + self.picture_extension
         
         # Create a temporary copy of the picture
@@ -134,6 +146,11 @@ class OfferPrintScreen(Screen):
             # Exit the app
             App.get_running_app().stop()
         Logger.info(f"OfferPrintScreen: Picture temporarily copied to {new_pic_name}")
+
+        # Remove the old picture if it is not the test picture
+        if self.picture != TEST_PICTURE_PATH:
+            os.remove(self.picture)
+
         self.picture = new_pic_name
 
         # Copy the picture to the save directory
@@ -143,16 +160,37 @@ class OfferPrintScreen(Screen):
             Logger.critical(f"Error copying picture to save directory: {e}\nPicture: {self.picture}")
             # Exit the app
             App.get_running_app().stop()
-        Logger.info(f"OfferPrintScreen: Picture saved to {self.save_dir_path}")
+        Logger.info(f"OfferPrintScreen: Picture saved to {self.save_dir_path}/{self.picture}")
+
+        # Apply the watermark if possible
+        if hasattr(app, 'picture_editor'):
+            try:
+                app.picture_editor.load_image(self.picture)
+                app.picture_editor.apply_watermark()
+                Logger.info(f"OfferPrintScreen: Watermark applied to {self.picture}")
+            except Exception as e:
+                Logger.critical(f"OfferPrintScreen: Error applying watermark: {e}")
+                # Exit the app
+                App.get_running_app().stop()
+                
+            # Remove the temporary picture and update picture name by adding a _wmk suffix
+            os.remove(self.picture)
+            self.picture = os.path.splitext(self.picture)[0] + '_wmk' + self.picture_extension
+            app.picture_editor.save_image(self.picture)
+
+            # Save it in the all directory
+            try:
+                copy2(self.picture, self.save_dir_path)
+            except Exception as e:
+                Logger.critical(f"Error copying picture to save directory: {e}\nPicture: {self.picture}")
+                # Exit the app
+                App.get_running_app().stop()
+            Logger.info(f"OfferPrintScreen: Watermarked picture saved to {self.save_dir_path}/{self.picture}")
 
         # Display the picture
-        self.picture_texture = Image(
-            source=self.picture, 
-            size_hint=(1, 0.7),
-            pos_hint={'center_x': 0.5, 'top': 0.96},
-            allow_stretch=True,
-            keep_ratio=True
-            )
+        Logger.debug(f"OfferPrintScreen: Displaying picture {self.picture}")
+        self.picture_texture.source = self.picture
+        self.picture_texture.reload()
 
     def update_bg(self, *args):
         """
@@ -168,6 +206,20 @@ class OfferPrintScreen(Screen):
         self.bg_texture.pos = self.pos
 
     def go_forward(self, *args):
+        Logger.info('OfferPrintScreen: will print this!')
+
+        # Copy the picture to the printed directory
+        try:
+            copy2(self.picture, self.printed_dir_path)
+        except Exception as e:
+            Logger.critical(f"Error copying picture to save directory: {e}\nPicture: {self.picture}")
+            # Exit the app
+            App.get_running_app().stop()
+        Logger.info(f"OfferPrintScreen: Picture saved to {self.printed_dir_path}/{self.picture}")
+
+        app = App.get_running_app()
+        app.current_picture = self.picture
+
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = self.manager.next()
 
@@ -175,3 +227,4 @@ class OfferPrintScreen(Screen):
         self.manager.transition = SlideTransition(direction='right')
         if 'offer_pic' in self.manager.screen_names:
             self.manager.current = 'offer_pic'
+

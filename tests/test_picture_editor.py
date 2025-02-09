@@ -25,7 +25,7 @@ if __name__ == '__main__':
             picture_desired_ar=picture_desired_ar,
             )
     except Exception as e:
-        Logger.fatal(f"Error setting up picture editor: {e}")
+        Logger.critical(f"Error setting up picture editor: {e}")
         raise e
     
     picture_editor.load_image(TEST_PICTURE_PATH)
