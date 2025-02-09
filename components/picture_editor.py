@@ -25,6 +25,13 @@ class PictureEditor():
     def load_image(self, image_path):
         self.current_image = Image.open(image_path).convert('RGBA')
 
+    def show_image(self):
+        if self.current_image is None:
+            Logger.error('PictureEditor: No image loaded')
+            return None
+
+        self.current_image.show()
+
     def crop_to_aspect_ratio(self, desired_ar = None):
         # Calculate current aspect ratio
         if desired_ar is None:
@@ -83,7 +90,7 @@ class PictureEditor():
             return None
 
         try:
-            if '.jpeg' in output_path:
+            if '.jpeg' in output_path or '.jpg' in output_path:
                 self.current_image.convert('RGB').save(output_path, format='JPEG')
             else:
                 self.current_image.save(output_path)

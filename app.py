@@ -39,7 +39,7 @@ class MyApp(App):
                     key = tuple([int(x) for x in k.split(',')])
                     watermark_color_map[key] = tuple(v)
             picture_desired_ar = self.config['picture_desired_ar']
-            picture_desired_ar = picture_desired_ar[0] / picture_desired_ar[1]
+            picture_desired_ar = float(picture_desired_ar[0]) / picture_desired_ar[1]
             self.picture_editor = PictureEditor(
                 watermark_path=self.config['watermark_path'],
                 watermark_color_map=watermark_color_map,
@@ -49,7 +49,6 @@ class MyApp(App):
             Logger.fatal(f"Error setting up picture editor: {e}")
             self.stop()
             return
-            
         
         # Detect screens and print their details
         monitors = get_monitors()
