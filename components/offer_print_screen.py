@@ -1,9 +1,8 @@
 from kivy.uix.screenmanager import Screen, SlideTransition
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
-from kivy.graphics import Rectangle, RoundedRectangle
+from kivy.graphics import Rectangle
 from kivy.logger import Logger
 from kivy.utils import get_color_from_hex
 from kivy.app import App
@@ -219,6 +218,11 @@ class OfferPrintScreen(Screen):
 
         app = App.get_running_app()
         app.current_picture = self.picture
+
+        if 'nprints_default' in app.config.keys():
+            app.nprints = app.config['nprints_default']
+        else:
+            app.nprints = 1
 
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = self.manager.next()

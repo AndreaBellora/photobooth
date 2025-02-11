@@ -9,5 +9,6 @@
     "pictures_dir_path": "/home/andrea/Projects/photobooth/pictures",
     "picture_file_name": "WeddingPic",
     "regular_font": "components/fonts/Tinos-Regular.ttf",
-    "cursive_font": "components/fonts/DancingScript-Regular.ttf"
+    "cursive_font": "components/fonts/DancingScript-Regular.ttf",
+    "nprints_default": 1
 }
