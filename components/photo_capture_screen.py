@@ -21,8 +21,11 @@ class PhotoCaptureScreen(Screen):
         with self.canvas.before:
             self.bg_texture = Rectangle(source='components/img/002-Watercolor-Paper.png', size=self.size, pos=self.pos)
 
+        # Bind size and position changes to update the tiling
+        self.bind(size=self.update_bg, pos=self.update_bg)
+
         # Create the animated spinny_thing
-        with self.canvas:
+        with self.canvas.after:
             self.spinny_thing_angle_1 = 0
             self.spinny_thing_angle_2 = 270
             self.st_step_1 = 20
@@ -35,12 +38,6 @@ class PhotoCaptureScreen(Screen):
                                              self.spinny_thing_angle_2),
                                      width=5)
         self.bind(pos=self._update_spinny_thing, size=self._update_spinny_thing)
-
-        # Animate the spinny_thing
-        Clock.schedule_interval(self.animate_spinny_thing, 0.05)
-
-        # Bind size and position changes to update the tiling
-        self.bind(size=self.update_bg, pos=self.update_bg)
 
         self.add_widget(self.layout)
 
@@ -72,6 +69,9 @@ class PhotoCaptureScreen(Screen):
         self._update_spinny_thing()
 
     def on_enter(self, *args):
+        # Animate the spinny_thing
+        Clock.schedule_interval(self.animate_spinny_thing, 0.05)
+
         Logger.debug(f'PhotoCaptureScreen: Taking picture')
         # Run asyncronously the take_picture method
         threading.Thread(target=self.take_picture).start()
@@ -92,11 +92,18 @@ class PhotoCaptureScreen(Screen):
     def take_picture(self):
         Logger.debug('PhotoCaptureScreen: Taking picture')
         app = App.get_running_app()
-        app.current_picture = self.camera_interface.capture()
+        try:
+            app.current_picture = self.camera_interface.capture()
+        except Exception as e:
+            Logger.critical(f'PhotoCaptureScreen: Error taking picture: {e}')
+            # Exit the app
+            app.stop()
         Clock.schedule_once(self.picture_taken)
 
     def picture_taken(self, dt):
         Logger.debug('PhotoCaptureScreen: Picture taken')
+
+        Clock.unschedule(self.animate_spinny_thing)
 
         self.manager.transition = NoTransition()
         self.manager.current = self.manager.next()

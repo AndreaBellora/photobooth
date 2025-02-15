@@ -62,7 +62,7 @@ class CountdownScreen(Screen):
 
     def on_enter(self, *args):
         Logger.debug(f'CountdownScreen: Starting countdown: {datetime.now()}')
-        Clock.schedule_once(self.start_countdown, 1)
+        Clock.schedule_once(self.start_countdown, 0.2)
 
     def on_leave(self, *args):
         self.current_counts = self.counts

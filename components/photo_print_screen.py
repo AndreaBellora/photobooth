@@ -1,4 +1,5 @@
 import threading
+import os
 
 from kivy.app import App
 from kivy.graphics import Color, Rectangle, Line
@@ -12,7 +13,6 @@ class PhotoPrintScreen(Screen):
     def __init__(self,printer_interface,**kwargs):
         super(PhotoPrintScreen, self).__init__(**kwargs)
         app = App.get_running_app()
-        config = app.config
 
         self.printer_interface = printer_interface      
         self.layout = FloatLayout(size_hint=(1, 1))
@@ -43,7 +43,6 @@ class PhotoPrintScreen(Screen):
         self.bind(size=self.update_bg, pos=self.update_bg)
 
         self.add_widget(self.layout)
-
 
     def _update_background(self, *args):
         # Ensure the rectangle matches the label's size and position
@@ -92,18 +91,26 @@ class PhotoPrintScreen(Screen):
     def print_photos(self):
         app = App.get_running_app()
         nprints=app.nprints            
-        picture = app.current_picture
-        Logger.debug(f'PhotoPrintScreen: Printing {nprints} copies of picture {picture}'.format(nprints=nprints, picture=picture))
+        self.picture = app.current_picture
+        Logger.debug('PhotoPrintScreen: Printing {nprints} copies of picture {picture}'.format(nprints=nprints, picture=self.picture))
 
-        self.printer_interface.print(
-            picture_path=picture,
-            n_copies=nprints
-        )
+        try:
+            self.printer_interface.print(
+                picture_path=self.picture,
+                n_copies=nprints
+            )
+        except Exception as e:
+            Logger.critical(f"PhotoPrintScreen: Error printing picture: {e}\nPicture: {self.picture}")
+            # Exit the app
+            App.get_running_app().stop()
                 
         Clock.schedule_once(self.photos_printed)
 
     def photos_printed(self, dt):
-        Logger.debug('PhotoPrintScreen: Picture(s) printed')
+        Logger.debug('PhotoPrintScreen: Picture(s) printed.')
+
+        app = App.get_running_app()
+        app.current_picture = None
 
         self.manager.transition = NoTransition()
         self.manager.current = self.manager.screen_names[0]

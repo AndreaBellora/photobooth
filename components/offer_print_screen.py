@@ -5,7 +5,10 @@ from kivy.uix.image import Image
 from kivy.graphics import Rectangle
 from kivy.logger import Logger
 from kivy.utils import get_color_from_hex
+from kivy.graphics import Color
 from kivy.app import App
+
+from kivy.uix.button import Button
 
 from components.interfaces import TEST_PICTURE_PATH
 
@@ -27,6 +30,7 @@ class OfferPrintScreen(Screen):
 
         # Use the canvas to draw the tiled background
         with self.canvas.before:
+            Color(1,1,1,1)
             self.bg_texture = Rectangle(source='components/img/002-Watercolor-Paper.png', size=self.size, pos=self.pos)
         
         # Bind size and position changes to update the tiling
@@ -223,6 +227,12 @@ class OfferPrintScreen(Screen):
             app.nprints = app.config['nprints_default']
         else:
             app.nprints = 1
+
+        # Remove the the temporary picture file
+        if self.picture != TEST_PICTURE_PATH:
+            Logger.debug(f"OfferPrintScreen: Removing temporary picture {self.picture}")
+            os.remove(self.picture)
+            app.current_picture = self.printed_dir_path + '/' + self.picture
 
         self.manager.transition = NoTransition()
         self.manager.current = self.manager.next()
