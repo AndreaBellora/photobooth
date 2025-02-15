@@ -10,5 +10,6 @@
     "picture_file_name": "WeddingPic",
     "regular_font": "components/fonts/Tinos-Regular.ttf",
     "cursive_font": "components/fonts/DancingScript-Regular.ttf",
-    "nprints_default": 1
+    "nprints_default": 1,
+    "printer_type": "Fake printer"
 }

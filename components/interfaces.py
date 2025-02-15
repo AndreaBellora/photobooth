@@ -113,5 +113,26 @@ class CameraInterface:
 
 
 class PrinterInterface:
-    # To be implemented
-    pass
+    def __init__(self, printer_model):
+        Logger.info('PrinterInterface: Setting up printer')
+        self.printer_model = printer_model
+
+        if self.printer_model == 'Fake printer':
+            return
+        
+    def print(self, picture_path, n_copies=1):
+        if self.printer_model == 'Fake printer':
+            Logger.info('PrinterInterface: Faking print (wait 40*{n_copies} s)'.format(n_copies=n_copies))
+            time.sleep(n_copies*40)
+            return
+        # Print picture using 'lp -n 2 picture.jpg'
+        # try:
+        #     subprocess.run(
+        #         ['lp', '-n', str(n_copies), picture_path],
+        #         check=True
+        #     )
+        #     Logger.info(f'PrinterInterface: Printed {n_copies} copies of {picture_path}')
+        # except subprocess.CalledProcessError as e:
+        #     Logger.error(f"PrinterInterface: Error printing picture: {e}")
+        #     return None
+    

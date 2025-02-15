@@ -130,8 +130,8 @@ class CountdownScreen(Screen):
 
     def go_home(self, *args):
         self.manager.transition = SlideTransition(direction='right')
-        self.manager.current = self.manager.first()
-
+        self.manager.current = self.manager.screen_names[0]
+        
     def go_forward(self, *args):
         self.manager.transition = SlideTransition(direction='left')
         self.manager.current = self.manager.next()

@@ -1,5 +1,3 @@
-from functools import partial
-from datetime import datetime
 import threading
 
 from kivy.app import App
@@ -10,13 +8,13 @@ from kivy.clock import Clock
 from kivy.utils import get_color_from_hex
 from kivy.logger import Logger
 
-class PrintLoadingScreen(Screen):
-    def __init__(self,camera_interface,**kwargs):
-        super(PrintLoadingScreen, self).__init__(**kwargs)
+class PhotoPrintScreen(Screen):
+    def __init__(self,printer_interface,**kwargs):
+        super(PhotoPrintScreen, self).__init__(**kwargs)
         app = App.get_running_app()
         config = app.config
 
-        self.camera_interface = camera_interface        
+        self.printer_interface = printer_interface      
         self.layout = FloatLayout(size_hint=(1, 1))
 
         # Use the canvas to draw the tiled background
@@ -43,9 +41,6 @@ class PrintLoadingScreen(Screen):
 
         # Bind size and position changes to update the tiling
         self.bind(size=self.update_bg, pos=self.update_bg)
-
-        # Run asyncronously the take_picture method
-        threading.Thread(target=self.take_picture).start()
 
         self.add_widget(self.layout)
 
@@ -76,6 +71,11 @@ class PrintLoadingScreen(Screen):
 
         self._update_spinny_thing()
 
+    def on_enter(self, *args):
+        Logger.debug(f'PhotoPrintScreen: Entering print loading screen')
+        # Run asyncronously the print_photos method
+        threading.Thread(target=self.print_photos).start()
+
     def update_bg(self, *args):
         """
         Updates the background to make it repeat along x and y.
@@ -89,26 +89,21 @@ class PrintLoadingScreen(Screen):
         self.bg_texture.size = self.size
         self.bg_texture.pos = self.pos
 
-    def take_picture(self):
-        Logger.debug('PrintLoadingScreen: Taking picture')
+    def print_photos(self):
         app = App.get_running_app()
-        app.current_picture = self.camera_interface.capture()
-        Clock.schedule_once(self.picture_taken)
+        nprints=app.nprints            
+        picture = app.current_picture
+        Logger.debug(f'PhotoPrintScreen: Printing {nprints} copies of picture {picture}'.format(nprints=nprints, picture=picture))
 
-    def picture_taken(self, dt):
-        Logger.debug('PrintLoadingScreen: Picture taken')
+        self.printer_interface.print(
+            picture_path=picture,
+            n_copies=nprints
+        )
+                
+        Clock.schedule_once(self.photos_printed)
+
+    def photos_printed(self, dt):
+        Logger.debug('PhotoPrintScreen: Picture(s) printed')
 
         self.manager.transition = SlideTransition(direction='left')
-        self.manager.current = self.manager.next()
-
-    def go_back(self, *args):
-        self.manager.transition = SlideTransition(direction='right')
-        self.manager.current = self.manager.previous()
-
-    def go_home(self, *args):
-        self.manager.transition = SlideTransition(direction='right')
-        self.manager.current = self.manager.first()
-
-    def go_forward(self, *args):
-        self.manager.transition = SlideTransition(direction='left')
-        self.manager.current = self.manager.next()
+        self.manager.current = self.manager.screen_names[0]

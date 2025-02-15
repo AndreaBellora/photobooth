@@ -7,12 +7,14 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 from kivy.logger import Logger, LOG_LEVELS
 
-from components.interfaces import CameraInterface
+from components.interfaces import CameraInterface,PrinterInterface
 from components.picture_editor import PictureEditor
 from components.offer_pic_screen import OfferPicScreen
 from components.countdown_screen import CountdownScreen
 from components.photo_capture_screen import PhotoCaptureScreen
 from components.offer_print_screen import OfferPrintScreen
+from components.nprints_screen import NPrintsScreen
+from components.photo_print_screen import PhotoPrintScreen
 
 class MyApp(App):
 
@@ -29,6 +31,15 @@ class MyApp(App):
             self.camera = CameraInterface(self.config['camera_type'])
         except Exception as e:
             Logger.fatal(f"Error setting up camera: {e}")
+            self.stop()
+            return
+        
+        # Set up printer
+        try:
+            self.printer = PrinterInterface(self.config['printer_type'])
+        except Exception as e:
+            Logger.fatal(f"Error setting up printer: {e}")
+            self.stop()
             return
         
         # Set up the picture editor
@@ -85,6 +96,8 @@ class MyApp(App):
         sm.add_widget(CountdownScreen(name='countdown',counts=5))
         sm.add_widget(PhotoCaptureScreen(camera_interface=self.camera, name='loading'))
         sm.add_widget(OfferPrintScreen(name='offer_print'))
+        sm.add_widget(NPrintsScreen(name='nprints'))
+        sm.add_widget(PhotoPrintScreen(printer_interface=self.printer, name='print-loading'))
 
         return sm
 
