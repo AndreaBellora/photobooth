@@ -7,7 +7,7 @@ from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.clock import Clock
 from functools import partial
 
@@ -23,7 +23,7 @@ class FirstScreen(Screen):
         self.add_widget(layout)
 
     def switch_to_second(self, *args):
-        self.manager.transition = SlideTransition(direction='left')
+        self.manager.transition = NoTransition()
         self.manager.current = self.manager.next()
 
 class CountdownScreen(Screen):
@@ -128,7 +128,7 @@ class CountdownScreen(Screen):
             self.layout.add_widget(go_back_button)
 
     def go_back(self, *args):
-        self.manager.transition = SlideTransition(direction='right')
+        self.manager.transition = NoTransition()
         self.manager.current = self.manager.previous()
 
 class MyApp(App):

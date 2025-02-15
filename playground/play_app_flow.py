@@ -5,7 +5,7 @@ from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 
 
 class FirstScreen(Screen):
@@ -20,7 +20,7 @@ class FirstScreen(Screen):
         self.add_widget(layout)
 
     def switch_to_second(self, *args):
-        self.manager.transition = SlideTransition(direction='left')
+        self.manager.transition = NoTransition()
         self.manager.current = 'second'
 
 class SecondScreen(Screen):
@@ -34,7 +34,7 @@ class SecondScreen(Screen):
         layout.add_widget(button)
         self.add_widget(layout)
     def switch_to_first(self, *args):
-        self.manager.transition = SlideTransition(direction='right')
+        self.manager.transition = NoTransition()
         self.manager.current = 'first'
 
 

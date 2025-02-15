@@ -1,4 +1,4 @@
-from kivy.uix.screenmanager import Screen, SlideTransition
+from kivy.uix.screenmanager import Screen, NoTransition
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.graphics import Rectangle
@@ -71,5 +71,5 @@ class OfferPicScreen(Screen):
         self.bg_texture.pos = self.pos
 
     def go_forward(self, *args):
-        self.manager.transition = SlideTransition(direction='left')
+        self.manager.transition = NoTransition()
         self.manager.current = self.manager.next()

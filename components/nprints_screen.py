@@ -1,4 +1,4 @@
-from kivy.uix.screenmanager import Screen, SlideTransition
+from kivy.uix.screenmanager import Screen, NoTransition
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.graphics import Rectangle
@@ -147,7 +147,7 @@ class NPrintsScreen(Screen):
     def go_forward(self, *args):
         app = App.get_running_app()
         Logger.info('NPrintsScreen: Printing {} copies'.format(app.nprints))
-        self.manager.transition = SlideTransition(direction='left')
+        self.manager.transition = NoTransition()
         self.manager.current = self.manager.next()
 
     def on_enter(self, *args):

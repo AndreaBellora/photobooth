@@ -1,4 +1,4 @@
-from kivy.uix.screenmanager import Screen, SlideTransition
+from kivy.uix.screenmanager import Screen, NoTransition
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
@@ -224,11 +224,11 @@ class OfferPrintScreen(Screen):
         else:
             app.nprints = 1
 
-        self.manager.transition = SlideTransition(direction='left')
+        self.manager.transition = NoTransition()
         self.manager.current = self.manager.next()
 
     def go_home(self, *args):
-        self.manager.transition = SlideTransition(direction='right')
+        self.manager.transition = NoTransition()
         if 'offer_pic' in self.manager.screen_names:
             self.manager.current = 'offer_pic'
 

@@ -3,7 +3,7 @@ import threading
 from kivy.app import App
 from kivy.graphics import Color, Rectangle, Line
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.screenmanager import Screen, SlideTransition
+from kivy.uix.screenmanager import Screen, NoTransition
 from kivy.clock import Clock
 from kivy.utils import get_color_from_hex
 from kivy.logger import Logger
@@ -98,17 +98,17 @@ class PhotoCaptureScreen(Screen):
     def picture_taken(self, dt):
         Logger.debug('PhotoCaptureScreen: Picture taken')
 
-        self.manager.transition = SlideTransition(direction='left')
+        self.manager.transition = NoTransition()
         self.manager.current = self.manager.next()
 
     def go_back(self, *args):
-        self.manager.transition = SlideTransition(direction='right')
+        self.manager.transition = NoTransition()
         self.manager.current = self.manager.previous()
 
     def go_home(self, *args):
-        self.manager.transition = SlideTransition(direction='right')
+        self.manager.transition = NoTransition()
         self.manager.current = self.manager.screen_names[0]
-        
+
     def go_forward(self, *args):
-        self.manager.transition = SlideTransition(direction='left')
+        self.manager.transition = NoTransition()
         self.manager.current = self.manager.next()
