@@ -5,7 +5,7 @@
     "watermark_color_map": {
         "255,255,255,255": [255, 255, 255, 180]
     },
-    "picture_desired_ar": [148,100],
+    "picture_desired_ar": [6,4],
     "pictures_dir_path": "/home/andrea/Projects/photobooth/pictures",
     "picture_file_name": "WeddingPic",
     "regular_font": "components/fonts/Tinos-Regular.ttf",
