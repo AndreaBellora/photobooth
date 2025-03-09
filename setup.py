@@ -5,7 +5,7 @@ with open("requirements.txt") as f:
     required = f.read().splitlines()
 
 setup(
-    name="your_project_name",
+    name="photobooth",
     version="0.1",
     packages=find_packages(),
     install_requires=required,

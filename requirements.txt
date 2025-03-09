@@ -1,2 +1,25 @@
+certifi==2024.12.14
+charset-normalizer==3.4.0
+docutils==0.21.2
+exceptiongroup==1.2.2
+future==1.0.0
+idna==3.10
+iniconfig==2.0.0
+iso8601==2.1.0
 Kivy==2.3.0
+Kivy-examples==2.3.0
+Kivy-Garden==0.1.5
+packaging==24.2
+-e git+ssh://git@github.com/AndreaBellora/photobooth.git@0a9748061433ee77b99d8238239ca4a669977528#egg=photobooth
+pillow==11.1.0
+pluggy==1.5.0
+pycups==2.0.4
+pydub==0.25.1
+Pygments==2.18.0
+pyserial==3.5
 pytest==8.3.4
+PyYAML==6.0.2
+requests==2.32.3
+screeninfo==0.8.1
+tomli==2.2.1
+urllib3==2.2.3
