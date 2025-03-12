@@ -11,7 +11,7 @@ if __name__ == '__main__':
                         format='%(asctime)s - %(levelname)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
     
-    model = 'Fake camera'
+    model = 'Nikon DSC D3000'
 
     # Read the model from cmd line and change it, unless it's empty
     if len(sys.argv) > 1:

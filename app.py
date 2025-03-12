@@ -33,7 +33,7 @@ class MyApp(App):
             Logger.fatal(f"Error setting up camera: {e}")
             self.stop()
             return
-        
+
         # Set up printer
         try:
             self.printer = PrinterInterface(self.config['printer_type'])
@@ -41,7 +41,7 @@ class MyApp(App):
             Logger.fatal(f"Error setting up printer: {e}")
             self.stop()
             return
-        
+
         # Set up the picture editor
         try:
             watermark_color_map = {}
@@ -60,12 +60,12 @@ class MyApp(App):
             Logger.fatal(f"Error setting up picture editor: {e}")
             self.stop()
             return
-        
+
         # Detect screens and print their details
         monitors = get_monitors()
         for i, monitor in enumerate(monitors):
             Logger.debug(f"Monitor {i}: {monitor}")
-        
+
         # Example: Use the second monitor if available
         if len(monitors) > 1:
             target_monitor = monitors[1]  # Choose the second monitor
@@ -74,8 +74,10 @@ class MyApp(App):
             Window.size = (target_monitor.width, target_monitor.height)
         else:
             target_monitor = monitors[0]
+            Window.left = target_monitor.x
+            Window.top = target_monitor.y
             Window.size = (1024, 600)
-        Logger.info(f"Using monitor {target_monitor}")        
+        Logger.info(f"Using monitor {target_monitor}")
 
         # Prepare output folders
         pictures_dir_path = self.config['pictures_dir_path']

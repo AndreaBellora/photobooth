@@ -89,7 +89,7 @@ if __name__ == "__main__":
     get_printer_attributes(printer_name, all=True)
 
     # Test print
-    # my_test_print_a4(printer_name)
+    my_test_print_a4(printer_name)
 
     # Test print photo
-    my_test_print_photo(printer_name)
+    # my_test_print_photo(printer_name)
