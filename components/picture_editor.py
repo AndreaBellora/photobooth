@@ -15,11 +15,15 @@ class PictureEditor():
         self.watermark = Image.open(watermark_path).convert('RGBA')
 
         # Apply color map to watermark
-        pixels = list(self.watermark.getdata())  # Get pixel data
-        new_pixels = [self.watermark_color_map.get(p, p) for p in pixels]  # Replace colors
-
+        pixels = self.watermark.load()  # Direct access to pixel data (memory-efficient)
+        width, height = self.watermark.size
+        for y in range(height):
+            for x in range(width):
+                pixel = pixels[x, y]
+                if pixel in watermark_color_map:
+                    pixels[x, y] = watermark_color_map[pixel]  # Modify pixel in-place
+                    
         # Update image
-        self.watermark.putdata(new_pixels)
         Logger.info('PictureEditor: Watermark loaded and color map applied')
         
     def load_image(self, image_path):

@@ -28,18 +28,25 @@ def fit_to_aspect_ratio(image, desired_ar):
     return image.crop((left, upper, right, lower)), new_width, new_height
 
 def apply_color_map(image, color_map):
-    # Apply color mapping
-    pixels = list(image.getdata())  # Get pixel data
-    new_pixels = [color_map.get(p, p) for p in pixels]  # Replace colors
+    """Apply RGBA color mapping efficiently using a generator."""
+    if image.mode != "RGBA":
+        image = image.convert("RGBA")
 
-    # Update image
-    image.putdata(new_pixels)
+    pixels = image.load()  # Direct access to pixel data (memory-efficient)
+    width, height = image.size
+
+    for y in range(height):
+        for x in range(width):
+            pixel = pixels[x, y]
+            if pixel in color_map:
+                pixels[x, y] = color_map[pixel]  # Modify pixel in-place
+
     return image
 
 # Paths
 picture_path = 'tests/test_pic.JPG'
 picture_desired_ar = 148 / 100  # Desired aspect ratio (width / height)
-watermark_path = 'components/img/Watermark2.png'
+watermark_path = 'components/img/watermark-transparent.png'
 watermark_desired_size = (None, None)
 watermark_color_map = {
     (255,255,255,255): (255, 255, 255, 180),
@@ -66,6 +73,7 @@ print(f"Resized Watermark Size: {watermark_resized.size}")
 
 # Change watermark color
 watermark_colored = apply_color_map(watermark_resized, watermark_color_map)
+# watermark_colored = watermark_resized
 
 # Compute new size for positioning
 picture_width, picture_height = picture_cropped.size
