@@ -29,6 +29,7 @@ class MyApp(App):
         # Set up the camera
         try:
             self.camera = CameraInterface(self.config['camera_type'])
+            self.camera.setup()
         except Exception as e:
             Logger.fatal(f"Error setting up camera: {e}")
             self.stop()
@@ -36,7 +37,8 @@ class MyApp(App):
 
         # Set up printer
         try:
-            self.printer = PrinterInterface(self.config['printer_type'])
+            self.printer = PrinterInterface(self.config['printer_type'], self.config['printer_options'])
+            self.printer.setup()
         except Exception as e:
             Logger.fatal(f"Error setting up printer: {e}")
             self.stop()
@@ -98,7 +100,7 @@ class MyApp(App):
         sm.add_widget(CountdownScreen(name='countdown',counts=5))
         sm.add_widget(PhotoCaptureScreen(camera_interface=self.camera, name='loading'))
         sm.add_widget(OfferPrintScreen(name='offer_print'))
-        sm.add_widget(NPrintsScreen(name='nprints'))
+        # sm.add_widget(NPrintsScreen(name='nprints'))
         sm.add_widget(PhotoPrintScreen(printer_interface=self.printer, name='print-loading'))
 
         return sm
