@@ -142,16 +142,15 @@ class PrinterInterface:
         conn = cups.Connection()
         attributes = conn.getPrinterAttributes(self.printer_name)
 
-        Logger.debug(f'Print options: {self.print_options}')
-
-        for opt, val in self.print_options:
-            if opt not in attributes.keys():
+        for opt, val in self.print_options.items():
+            if opt+'-supported' not in attributes.keys():
                 Logger.error(f'PrinterInterface: Print option {opt} is not valid')
-                Logger.debug(f'PrinterInterface: Valid options:\n{attributes.items()}')
+                Logger.debug(f'PrinterInterface: Valid options:\n{
+                    [k.replace('-supported','') for k in attributes.keys()]}')
                 raise Exception(f'Error in setting up printer')
-            if val not in attributes[opt]:
+            if val not in attributes[opt+'-supported']:
                 Logger.error(f'PrinterInterface: Value {val} set for print option {opt} is not valid')
-                Logger.debug(f'PrinterInterface: Valid values:\n{attributes[opt]}')
+                Logger.debug(f'PrinterInterface: Valid values:\n{attributes[opt+'-supported']}')
                 raise Exception(f'Error in setting up printer')
         
         return True
