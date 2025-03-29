@@ -172,4 +172,18 @@ class PrinterInterface:
             time.sleep(n_copies*40)
             return
 
-        # Handle real print    
+        # Handle real print
+        if not os.path.exists(picture_path):
+            Logger.error(f'PrinterInterface: File {picture_path} does not exist')
+            return
+        
+        pdf_filepath = picture_path.replace('.JPG', '.pdf')
+        self.convert_to_pdf(picture_path, pdf_filepath)
+
+        conn = cups.Connection()
+        conn.printFile(self.printer_name, pdf_filepath, pdf_filepath, self.print_options)
+
+        # Remove the pdf file
+        os.remove(pdf_filepath)
+        Logger.info('PrinterInterface: Print job sent to printer')
+        return True
