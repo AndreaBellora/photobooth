@@ -142,6 +142,8 @@ class PrinterInterface:
         conn = cups.Connection()
         attributes = conn.getPrinterAttributes(self.printer_name)
 
+        Logger.debug(f'Print options: {self.print_options}')
+
         for opt, val in self.print_options:
             if opt not in attributes.keys():
                 Logger.error(f'PrinterInterface: Print option {opt} is not valid')

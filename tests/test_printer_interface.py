@@ -15,7 +15,7 @@ from components.interfaces import PrinterInterface
                          ])
 def test_printer_interface(printer_type, print_options):
     # Setup logging for test
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger()
     logger.info(f"Testing printer interface with {printer_type}")
 
