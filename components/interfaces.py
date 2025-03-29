@@ -145,8 +145,8 @@ class PrinterInterface:
         for opt, val in self.print_options.items():
             if opt+'-supported' not in attributes.keys():
                 Logger.error(f'PrinterInterface: Print option {opt} is not valid')
-                Logger.debug(f'PrinterInterface: Valid options:\n{
-                    [k.replace('-supported','') for k in attributes.keys()]}')
+                Logger.debug(f'PrinterInterface: Valid options:'
+                    f'\n{[k.replace('-supported','') for k in attributes.keys()]}')
                 raise Exception(f'Error in setting up printer')
             if val not in attributes[opt+'-supported']:
                 Logger.error(f'PrinterInterface: Value {val} set for print option {opt} is not valid')
