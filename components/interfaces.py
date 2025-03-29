@@ -1,6 +1,8 @@
 import subprocess
 import os
 import time
+import cups
+from PIL import Image
 from kivy.logger import Logger
 from pydub import AudioSegment
 from pydub.playback import play
@@ -113,26 +115,60 @@ class CameraInterface:
 
 
 class PrinterInterface:
-    def __init__(self, printer_model):
-        Logger.info('PrinterInterface: Setting up printer')
-        self.printer_model = printer_model
+    def __init__(self, printer_name, print_options):
+        Logger.info(f'PrinterInterface: Setting up printer {printer_name}')
+        self.printer_name = printer_name
+        self.print_options = print_options
 
-        if self.printer_model == 'Fake printer':
+        if self.printer_name == 'Fake printer':
             return
+        else:
+            conn = cups.Connection()
+            printers = conn.getPrinters()
+            Logger.debug('PrinterInterface: Available printers:')
+            for printer_name in printers.keys():
+                Logger.debug(f'PrinterInterface: {printer_name}')
+
+            if self.printer_name in printers.keys():
+                return
+            else:
+                raise Exception(f'Printer not found')
+            
+    def setup(self):
+        """Check that the selected options are indeed among the possible ones"""
+        if self.printer_name == 'Fake printer':
+            return True
         
+        conn = cups.Connection()
+        attributes = conn.getPrinterAttributes(self.printer_name)
+
+        for opt, val in self.print_options:
+            if opt not in attributes.keys():
+                Logger.error(f'PrinterInterface: Print option {opt} is not valid')
+                Logger.debug(f'PrinterInterface: Valid options:\n{attributes.items()}')
+                raise Exception(f'Error in setting up printer')
+            if val not in attributes[opt]:
+                Logger.error(f'PrinterInterface: Value {val} set for print option {opt} is not valid')
+                Logger.debug(f'PrinterInterface: Valid values:\n{attributes[opt]}')
+                raise Exception(f'Error in setting up printer')
+        
+        return True
+            
+    def convert_to_pdf(image_path, output_path):
+        # Open the image
+        img = Image.open(image_path)
+
+        # Convert to RGB if necessary
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+
+        # Convert to PDF
+        img.save(output_path, 'PDF', resolution=100.0)
+
     def print(self, picture_path, n_copies=1):
-        if self.printer_model == 'Fake printer':
+        if self.printer_name == 'Fake printer':
             Logger.info('PrinterInterface: Faking print (wait 40*{n_copies} s)'.format(n_copies=n_copies))
             time.sleep(n_copies*40)
             return
-        # Print picture using 'lp -n 2 picture.jpg'
-        # try:
-        #     subprocess.run(
-        #         ['lp', '-n', str(n_copies), picture_path],
-        #         check=True
-        #     )
-        #     Logger.info(f'PrinterInterface: Printed {n_copies} copies of {picture_path}')
-        # except subprocess.CalledProcessError as e:
-        #     Logger.error(f"PrinterInterface: Error printing picture: {e}")
-        #     return None
-    
+
+        # Handle real print    

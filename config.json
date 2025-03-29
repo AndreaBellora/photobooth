@@ -11,5 +11,11 @@
     "regular_font": "components/fonts/Tinos-Regular.ttf",
     "cursive_font": "components/fonts/DancingScript-Regular.ttf",
     "nprints_default": 1,
-    "printer_type": "Fake printer"
+    "printer_type": "HP_Envy_6500e_series_E862A7",
+    "printer_options": {
+        "media": "oe_4x-6-borderless_4x6in",
+        "media-type": "com.hp-photographic-glossy",
+        "print-scaling": "auto-fit",
+        "print-color-mode": "color"
+    }
 }
