@@ -1,0 +1,13 @@
+[Unit]
+Description=Start Wi-Fi Hotspot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nmcli connection up wedding-pi
+RemainAfterExit=yes
+User=root
+
+[Install]
+WantedBy=multi-user.target
