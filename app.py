@@ -106,5 +106,5 @@ class MyApp(App):
         return sm
 
 if __name__ == '__main__':
-    # Logger.setLevel(LOG_LEVELS['debug'])
+    Logger.setLevel(LOG_LEVELS['debug'])
     MyApp().run()

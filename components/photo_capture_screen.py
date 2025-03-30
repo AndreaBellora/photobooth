@@ -72,7 +72,6 @@ class PhotoCaptureScreen(Screen):
         # Animate the spinny_thing
         Clock.schedule_interval(self.animate_spinny_thing, 0.05)
 
-        Logger.debug(f'PhotoCaptureScreen: Taking picture')
         # Run asyncronously the take_picture method
         threading.Thread(target=self.take_picture).start()
 

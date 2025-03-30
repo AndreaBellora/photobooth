@@ -10,7 +10,9 @@ from kivy.app import App
 
 from kivy.uix.button import Button
 
+from kivy.graphics.opengl import glGetIntegerv, GL_MAX_TEXTURE_SIZE
 from components.interfaces import TEST_PICTURE_PATH
+from PIL import Image as PILImage
 
 
 import os
@@ -19,6 +21,35 @@ from shutil import copy2
 from components.rounded_button import RoundedButton
 
 class OfferPrintScreen(Screen):
+    def get_max_texture_size(self):
+        max_size = (glGetIntegerv(GL_MAX_TEXTURE_SIZE))[0]
+        Logger.debug(f"OpenGL Max Texture Size: {max_size}")
+        return max_size
+    
+    def resize_image_if_needed(self, image_path):
+        image = PILImage.open(image_path)
+        test_image_width, test_image_height = image.size
+        image.close()
+        if test_image_width > self.max_texture_size or test_image_height > self.max_texture_size:       
+            # Calculate the new size
+            if test_image_width > test_image_height:
+                scale = self.max_texture_size / test_image_width
+            else:
+                scale = self.max_texture_size / test_image_height
+            new_width = int(test_image_width * scale)
+            new_height = int(test_image_height * scale)
+
+            # Resize the image
+            image = PILImage.open(image_path)
+            image = image.resize((new_width, new_height), PILImage.LANCZOS)
+            resized_image_path = os.path.splitext(image_path)[0] + '_resized' + os.path.splitext(image_path)[1]
+            image.save(resized_image_path)
+            Logger.debug(f"OfferPrintScreen: Resized image to {resized_image_path}")
+            image.close()
+            return resized_image_path
+        else:
+            return image_path           
+         
     def __init__(self, counts=10, **kwargs):
         super(OfferPrintScreen, self).__init__(**kwargs)
         config = App.get_running_app().config
@@ -26,6 +57,9 @@ class OfferPrintScreen(Screen):
         self.base_font_size = 50
         self.big_font_size = 200
 
+        self.max_texture_size = self.get_max_texture_size()
+
+        self.files_to_clean = []
         self.layout = FloatLayout(size_hint=(1, 1))
 
         # Use the canvas to draw the tiled background
@@ -36,9 +70,13 @@ class OfferPrintScreen(Screen):
         # Bind size and position changes to update the tiling
         self.bind(size=self.update_bg, pos=self.update_bg)
 
+        test_display_image = self.resize_image_if_needed(TEST_PICTURE_PATH)
+        if test_display_image != TEST_PICTURE_PATH:
+            self.files_to_clean.append(test_display_image)
+
         # Display the picture
         self.picture_texture = Image(
-            source=TEST_PICTURE_PATH, 
+            source=test_display_image, 
             size_hint=(1, 0.7),
             pos_hint={'center_x': 0.5, 'top': 0.96},
             allow_stretch=True,
@@ -118,8 +156,14 @@ class OfferPrintScreen(Screen):
         Logger.debug(f'OfferPrintScreen: Picture is {self.picture}')
 
         # Display the new picture
-        Logger.debug(f"OfferPrintScreen: Displaying picture {self.picture}")
-        self.picture_texture.source = self.picture
+        display_image = self.resize_image_if_needed(self.picture)
+        if display_image != self.picture:
+            Logger.info(f"OfferPrintScreen: Resized image to {display_image}")
+            self.files_to_clean.append(display_image)
+            self.picture_texture.source = display_image
+        else:
+            self.picture_texture.source = self.picture
+        Logger.debug(f"OfferPrintScreen: Displaying picture {self.picture_texture.source}")
         self.picture_texture.reload()
 
         # Get the paths to the directories
@@ -148,10 +192,11 @@ class OfferPrintScreen(Screen):
             Logger.critical(f"Error copying picture to temporary directory: {e}\nPicture: {self.picture}")
             # Exit the app
             App.get_running_app().stop()
-        Logger.info(f"OfferPrintScreen: Picture temporarily copied to {new_pic_name}")
+        Logger.debug(f"OfferPrintScreen: Picture temporarily copied to {new_pic_name}")
 
-        # Remove the old picture if it is not the test picture
+        # Remove the original picture file, named by the camera
         if self.picture != TEST_PICTURE_PATH:
+            Logger.debug(f"OfferPrintScreen: Removing file from camera: {self.picture}")
             os.remove(self.picture)
 
         self.picture = new_pic_name
@@ -191,9 +236,29 @@ class OfferPrintScreen(Screen):
             Logger.info(f"OfferPrintScreen: Watermarked picture saved to {self.save_dir_path}/{self.picture}")
 
         # Display the picture
-        Logger.debug(f"OfferPrintScreen: Displaying picture {self.picture}")
-        self.picture_texture.source = self.picture
+        display_image = self.resize_image_if_needed(self.picture)
+        if display_image != self.picture:
+            Logger.info(f"OfferPrintScreen: Resized image to {display_image}")
+            self.files_to_clean.append(display_image)
+            self.files_to_clean.append(self.picture)
+            self.picture_texture.source = display_image
+        else:
+            self.files_to_clean.append(self.picture)
+            self.picture_texture.source = self.picture
+        Logger.debug(f"OfferPrintScreen: Displaying picture {self.picture_texture.source}")
         self.picture_texture.reload()
+
+    def on_leave(self, *args):
+        # Remove all temporary files
+        Logger.debug(f"OfferPrintScreen: Removing temporary files: {self.files_to_clean}")
+        for file in set(self.files_to_clean):
+            try:
+                if os.path.isfile(file):
+                    os.remove(file)
+                    Logger.debug(f"OfferPrintScreen: Removed temporary file {file}")
+                    self.files_to_clean.remove(file)
+            except Exception as e:
+                Logger.error(f"Error removing temporary file: {e}\nFile: {file}")
 
     def update_bg(self, *args):
         """

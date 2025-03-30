@@ -82,7 +82,7 @@ class PictureEditor():
         watermark_size = self.watermark.size
         
         if watermark_size != image_size:
-            Logger.info(f'PictureEditor: Watermark and image sizes do not match. Resizing watermark to match image size')
+            Logger.info(f'PictureEditor: Watermark and image sizes do not match (wmk: {watermark_size}, img: {image_size}). Resizing watermark to match image size')
             self.watermark = self.watermark.resize(image_size, Image.LANCZOS)
     
         # Apply watermark
