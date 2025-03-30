@@ -155,7 +155,7 @@ class PrinterInterface:
         
         return True
             
-    def convert_to_pdf(image_path, output_path):
+    def convert_to_pdf(self,image_path, output_path):
         # Open the image
         img = Image.open(image_path)
 
