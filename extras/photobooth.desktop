@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=photobooth
+Exec=/home/pi/photobooth/start.sh
+Icon=utilities-terminal
+Terminal=true
+StartupNotify=false
