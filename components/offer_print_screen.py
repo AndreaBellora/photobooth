@@ -54,8 +54,8 @@ class OfferPrintScreen(Screen):
         super(OfferPrintScreen, self).__init__(**kwargs)
         config = App.get_running_app().config
 
-        self.base_font_size = 50
-        self.big_font_size = 200
+        self.base_font_size = 70
+        self.button_font_size = 50
 
         self.max_texture_size = self.get_max_texture_size()
 
@@ -103,7 +103,7 @@ class OfferPrintScreen(Screen):
             text='Sì',
             font_name=config['cursive_font'],
             size_hint=(None, None),
-            font_size=self.base_font_size,
+            font_size=self.button_font_size,
             radius = [25]
         )
         self.print_button.bind(on_press=self.go_forward)
@@ -115,7 +115,7 @@ class OfferPrintScreen(Screen):
             text='No',
             font_name=config['cursive_font'],
             size_hint=(None, None),
-            font_size=self.base_font_size,
+            font_size=self.button_font_size,
             radius = [25]
         )
         self.back_button.bind(on_press=self.go_home)
