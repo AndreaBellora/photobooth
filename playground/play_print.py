@@ -27,7 +27,11 @@ def get_printer_attributes(printer_name, all=False):
                key == 'print-color-mode-supported':
                 print(f"{key}: {value}")
         else:
+            if key.startswith('marker') or 'level' in key:
+                print(f'-'*20)
             print(f"{key}: {value}")
+            if key.startswith('marker') or 'level' in key:
+                print(f'-'*20)
 
 def convert_to_pdf(image_path, output_path):
     # Open the image
@@ -83,13 +87,14 @@ if __name__ == "__main__":
     list_printers()
 
     # Get the desired printer from command line
-    printer_name = 'HP_Envy_6500e_series_E862A7_USB'
+    # printer_name = 'HP_Envy_6500e_series_E862A7_USB'
+    printer_name = 'HP-Envy-6500e'
     printer_name = input("Enter printer name: ") if printer_name == None else printer_name
 
     get_printer_attributes(printer_name, all=True)
 
     # Test print
-    my_test_print_a4(printer_name)
+    # my_test_print_a4(printer_name)
 
     # Test print photo
     # my_test_print_photo(printer_name)
