@@ -57,10 +57,29 @@ class CameraInterface:
                 Logger.fatal(f"CameraInterface: Error setting up Nikon DSC D3000: {e}")
         else:
             raise Exception('Tried setting up Nikon DSC D3000, but camera not detected.')
-        
+
+    def setup_nikon_dsc_d80(self):
+        if 'Nikon DSC D80' in self.camera_name:
+            Logger.debug('CameraInterface: Nikon DSC D3000 detected.')
+            # Execute the command to setup the right capture mode 
+            # gphoto2 --set-config /main/capturesettings/capturemode=3
+            try:
+                subprocess.run(
+                    ['gphoto2', '--set-config', '/main/capturesettings/capturemode=3'],
+                    check=True
+                )
+                Logger.info('CameraInterface: Nikon DSC D80 setup complete.')
+            except subprocess.CalledProcessError as e:
+                Logger.fatal(f"CameraInterface: Error setting up Nikon DSC D80: {e}")
+        else:
+            raise Exception('Tried setting up Nikon DSC D80, but camera not detected.')
+
     def setup(self):
         if self.camera_model == 'Nikon DSC D3000':
             self.setup_nikon_dsc_d3000()
+            return True
+        elif self.camera_model == 'Nikon DSC D80':
+            self.setup_nikon_dsc_d80()
             return True
         elif self.camera_model == 'Fake camera':
             return True

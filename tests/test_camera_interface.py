@@ -3,7 +3,7 @@ import pytest
 import logging
 from components.interfaces import CameraInterface
 
-@pytest.mark.parametrize("camera_type", ["Fake camera", "Nikon DSC D3000"])
+@pytest.mark.parametrize("camera_type", ["Fake camera", "Nikon DSC D3000", "Nikon DSC D80"])
 def test_camera_interface(camera_type):
 
     # Setup logging for test
