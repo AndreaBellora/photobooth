@@ -30,7 +30,7 @@ class PhotoCaptureScreen(Screen):
             self.spinny_thing_angle_2 = 270
             self.st_step_1 = 20
             self.st_step_2 = 15
-            self.spinny_thing_color = Color(*get_color_from_hex('#AE8EC3'))
+            self.spinny_thing_color = Color(*get_color_from_hex('#9C4824'))
             self.spinny_thing = Line(circle=(self.center_x,
                                              self.center_y,
                                              40,
