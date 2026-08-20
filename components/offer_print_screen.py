@@ -1,14 +1,14 @@
 from kivy.uix.screenmanager import Screen, NoTransition
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.image import Image
+from kivy.uix.image import AsyncImage
 from kivy.graphics import Rectangle
 from kivy.logger import Logger
 from kivy.utils import get_color_from_hex
 from kivy.graphics import Color
 from kivy.app import App
 
-from kivy.uix.button import Button
+from kivy.clock import Clock
 
 from kivy.graphics.opengl import glGetIntegerv, GL_MAX_TEXTURE_SIZE
 from components.interfaces import TEST_PICTURE_PATH
@@ -54,8 +54,8 @@ class OfferPrintScreen(Screen):
         super(OfferPrintScreen, self).__init__(**kwargs)
         config = App.get_running_app().config
 
-        self.base_font_size = 50
-        self.big_font_size = 200
+        self.base_font_size = 70
+        self.button_font_size = 50
 
         self.max_texture_size = self.get_max_texture_size()
 
@@ -70,18 +70,18 @@ class OfferPrintScreen(Screen):
         # Bind size and position changes to update the tiling
         self.bind(size=self.update_bg, pos=self.update_bg)
 
-        test_display_image = self.resize_image_if_needed(TEST_PICTURE_PATH)
-        if test_display_image != TEST_PICTURE_PATH:
-            self.files_to_clean.append(test_display_image)
+        # test_display_image = self.resize_image_if_needed(TEST_PICTURE_PATH)
+        # if test_display_image != TEST_PICTURE_PATH:
+            # self.files_to_clean.append(test_display_image)
 
         # Display the picture
-        self.picture_texture = Image(
-            source=test_display_image, 
-            size_hint=(1, 0.7),
+        self.picture_texture = AsyncImage(
+            source='components/img/transparent.png', 
+            size_hint=(0.7, 0.7),
             pos_hint={'center_x': 0.5, 'top': 0.96},
-            allow_stretch=True,
+            # allow_stretch=True,
             keep_ratio=True
-            )   
+            )
 
         self.label = Label(
             text='Vuoi stampare la foto?',
@@ -103,7 +103,7 @@ class OfferPrintScreen(Screen):
             text='Sì',
             font_name=config['cursive_font'],
             size_hint=(None, None),
-            font_size=self.base_font_size,
+            font_size=self.button_font_size,
             radius = [25]
         )
         self.print_button.bind(on_press=self.go_forward)
@@ -115,7 +115,7 @@ class OfferPrintScreen(Screen):
             text='No',
             font_name=config['cursive_font'],
             size_hint=(None, None),
-            font_size=self.base_font_size,
+            font_size=self.button_font_size,
             radius = [25]
         )
         self.back_button.bind(on_press=self.go_home)
@@ -156,15 +156,15 @@ class OfferPrintScreen(Screen):
         Logger.debug(f'OfferPrintScreen: Picture is {self.picture}')
 
         # Display the new picture
-        display_image = self.resize_image_if_needed(self.picture)
-        if display_image != self.picture:
-            Logger.info(f"OfferPrintScreen: Resized image to {display_image}")
-            self.files_to_clean.append(display_image)
-            self.picture_texture.source = display_image
-        else:
-            self.picture_texture.source = self.picture
-        Logger.debug(f"OfferPrintScreen: Displaying picture {self.picture_texture.source}")
-        self.picture_texture.reload()
+        # display_image = self.resize_image_if_needed(self.picture)
+        # if display_image != self.picture:
+        #     Logger.info(f"OfferPrintScreen: Resized image to {display_image}")
+        #     self.files_to_clean.append(display_image)
+        #     self.picture_texture.source = display_image
+        # else:
+        #     self.picture_texture.source = self.picture
+        # Logger.debug(f"OfferPrintScreen: Displaying picture {self.picture_texture.source}")
+        # self.picture_texture.reload()
 
         # Get the paths to the directories
         self.pictures_dir_path = config['pictures_dir_path']
@@ -259,6 +259,9 @@ class OfferPrintScreen(Screen):
                     self.files_to_clean.remove(file)
             except Exception as e:
                 Logger.error(f"Error removing temporary file: {e}\nFile: {file}")
+        
+        self.picture_texture.source = 'components/img/transparent.png'
+        self.picture_texture.reload()
 
     def update_bg(self, *args):
         """

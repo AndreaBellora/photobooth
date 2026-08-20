@@ -16,8 +16,8 @@ class CountdownScreen(Screen):
         app = App.get_running_app()
         config = app.config
 
-        self.base_font_size = 50
-        self.big_font_size = 200
+        self.base_font_size = 200
+        self.big_font_size = 350
         self.animation_duration = 0.6
         self.animation_steps = 10
         self.tick_time = 2

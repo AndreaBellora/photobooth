@@ -12,8 +12,8 @@ class OfferPicScreen(Screen):
         super(OfferPicScreen, self).__init__(**kwargs)
         config = App.get_running_app().config
 
-        self.base_font_size = 50
-        self.big_font_size = 200
+        self.base_font_size = 75
+        self.big_font_size = 100
 
         self.layout = FloatLayout(size_hint=(1, 1))
 
@@ -26,7 +26,7 @@ class OfferPicScreen(Screen):
 
         self.label = Label(
             text='Vuoi fare una foto?',
-            font_size=self.base_font_size,
+            font_size=self.big_font_size,
             font_name=config['regular_font'],
             color=get_color_from_hex('#515151'),
             size_hint=(None, None),
