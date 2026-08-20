@@ -4,8 +4,8 @@ from kivy.utils import get_color_from_hex
 
 class RoundedButton(Button):
     def __init__(self,
-                 bkg_color=get_color_from_hex('#AE8EC3'),
-                 bkg_color_down=get_color_from_hex('#C9A0DC'),
+                 bkg_color=get_color_from_hex('#9C4824'),
+                 bkg_color_down=get_color_from_hex('#803A1C'),
                  border_color=get_color_from_hex('#000000'),
                  border_color_down=get_color_from_hex('#FFFFFF'),
                  border_width=1,
